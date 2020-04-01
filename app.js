@@ -6,4 +6,4 @@ app.use(express.static(__dirname + '/src'))
 app.set('view engine', 'pug')
 app.get('/', (req, res) => res.render('index'))
 
-app.listen(PORT, () => console.log('App listening on port ' + port))
+app.listen(PORT, () => console.log('App listening on port ' + PORT))
