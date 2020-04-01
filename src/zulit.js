@@ -1,7 +1,18 @@
-// add update ticker
 // make sure grid dots are on whole number coordinates
 // switch to modules + require
 // phone support
+// snap to pixel mode?
+// Nicer typography
+// Update colors
+
+// how to track which segments a piece overlaps?
+
+// show game grid
+// snap to grid
+// disallow overlap
+// show target
+// detect target
+
 
 /* Constants */
 
@@ -20,24 +31,39 @@ const segLength = 40
 
 /* Application */
 
-addHeadingToPage()
+addHeading()
 
+// Keypress to rotate
+document.onkeypress = function (event) {
+  event = event || window.event
+  
+  switch (event.code) {
+    case "KeyR":
+      event.view.rotate()
+      break
+  }
+}
+
+var selectedShape = false
 var stage = new createjs.Stage("canvas-container")
 if (segWidth % 2 == 1) {
   stage.regX = stage.regY = 0.5
 }
 stage.enableMouseOver(20)
 
-var z = new Shape("z", blue, 50, 150)
-var u = new Shape("u", red, 150, 150)
-var l = new Shape("l", green, 210, 100)
-var i = new Shape("i", orange, 270, 50)
-var t = new Shape("t", violet, 300, 150)
+var z1 = new Shape("z", blue,     segWidth,                 segWidth)
+var z2 = new Shape("z", cyan,     segWidth,                 segWidth + 2*segLength)
+var u  = new Shape("u", red,    2*segLength + 2.5*segWidth, segWidth + 2*segLength)
+var l1 = new Shape("l", green,  3*segLength + 4*segWidth,   segWidth + segLength)
+var l2 = new Shape("l", green,  4*segLength + 5.5*segWidth, segWidth + segLength)
+var i  = new Shape("i", yellow, 5*segLength + 7*segWidth,   segWidth)
+var t1 = new Shape("t", violet, 5*segLength + 8.5*segWidth, segWidth)
+var t2 = new Shape("t", violet, 5*segLength + 8.5*segWidth, segWidth + 2*segLength)
 
-var shapes = [z,u,l,i,t]
+var shapes = [z1,z2,u,l1,l2,i,t1,t2]
 addListeners(shapes)
 addToStage(shapes)
-stage.update();
+stage.update()
 
 
 /* Helper Functions */
@@ -45,36 +71,110 @@ stage.update();
 function addListeners(shapes) {
   for (shape of shapes) {
     
-    shape.container.on("mouseover", function(evt) {
+    // Shape becomes selected when mouse hovers over it
+    shape.container.on("rollover", function(event) {
+      selectedShape = this
+      stage.setChildIndex( this, stage.numChildren-1)
       this.darken()
       stage.update()
-    });
+    })
 
-    shape.container.on("mouseout", function(evt) {
-      this.lighten()
+    // Shape becomes unselected when mouse moves off of it (except when dragging)
+    shape.container.on("rollout", function(event) {
+      if (!mouseDown) {
+        selectedShape = false
+        this.lighten()
+        stage.update()
+      }
+    })
+
+    // When clicking on a shape, record the mouse offset within
+    // the shape in order to drag from that point
+    var mouseDown = false
+    shape.container.on("mousedown", function(event) {
+      mouseDown = true
+      this.offset = {x: this.x - event.stageX, y: this.y - event.stageY}
+    })
+
+    // When mouse goes up, check if we're still over the shape
+    // and if not, unselect it.
+    shape.container.on("pressup", function(event) {
+      mouseDown = false
+      
+      var pt = this.globalToLocal(stage.mouseX, stage.mouseY)
+      if (!this.hitTest(pt.x, pt.y)) {
+        selectedShape = false
+        this.lighten()
+        stage.update()
+      }
+    })
+
+    // Update shape coordinates while dragging
+    // offset so that drag occurs from mouse point
+    shape.container.on("pressmove", function(event) {
+      this.x = event.stageX + this.offset.x
+	    this.y = event.stageY + this.offset.y
       stage.update()
-    });
-
-    shape.container.on("mousedown", function(evt) {
-      this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
-    });
-
-    shape.container.on("pressmove", function(evt) {
-      this.x = evt.stageX + this.offset.x;
-	    this.y = evt.stageY + this.offset.y;
-      stage.update()
-    });
+    })
 
   }
 }
 
+// Add objects to the stage
 function addToStage(children) {
   for (child of children) {
     stage.addChild(child.container)
   }
 }
 
-function addHeadingToPage() {
+// Rotate the selected shape
+function rotate() {
+  if (!selectedShape) { return }
+
+  // Mouse point w/in shape
+  var pt = selectedShape.globalToLocal(stage.mouseX, stage.mouseY)
+
+  // Need to rotate the offset values as well
+  selectedShape.offset = {x: -selectedShape.offset.y, y: selectedShape.offset.x}
+
+  // Translate center of rotation to mouse point, rotate, then translate back
+  switch (selectedShape.rotation % 360) {
+    case 0:
+      selectedShape.x += pt.x
+      selectedShape.y += pt.y
+      selectedShape.rotation += 90
+      selectedShape.x += pt.y
+      selectedShape.y -= pt.x
+      break
+    case 90:
+      selectedShape.x -= pt.y
+      selectedShape.y += pt.x
+      selectedShape.rotation += 90
+      selectedShape.x += pt.x
+      selectedShape.y += pt.y
+      break
+    case 180:
+      selectedShape.x -= pt.x
+      selectedShape.y -= pt.y
+      selectedShape.rotation += 90
+      selectedShape.x -= pt.y
+      selectedShape.y += pt.x
+      break
+    case 270:
+      selectedShape.x += pt.y
+      selectedShape.y -= pt.x
+      selectedShape.rotation += 90
+      selectedShape.x -= pt.x
+      selectedShape.y -= pt.y
+      break
+  }
+  stage.update()
+}
+
+function addHeading() {
   var heading = document.getElementById('heading')
   heading.innerHTML = "Zulit"
+
+  var subheading = document.getElementById('subheading')
+  subheading.innerHTML = "Drag the pieces to cover the target shape below.<br/>Press 'R' to rotate the selected piece."
 }

@@ -54,6 +54,7 @@ class Shape {
     this.container.strokes = []
     this.container.x = x
     this.container.y = y
+    this.container.name = this.type
 
     switch (type) {
       case "z":
