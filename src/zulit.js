@@ -3,16 +3,26 @@
 // phone support
 // snap to pixel mode?
 // Nicer typography
-// Update colors
+// center grid
+
+
+// make rotation a method of Shape
 
 // how to track which segments a piece overlaps?
+  // --> shape.type + shape.rotation + which dot snapped to
 
-// make Shape subclass of container
+// Update colors
+// hit test check before snapping to grid
 
-// snap to grid
 // disallow overlap
-// show target
-// detect target
+  // --> what happens? revert to last position? (animate?)
+
+// detect target complete
+  // detect segment overlap when snapping piece
+    // --> shape.type + shape.rotation + which dot snapped to
+  // store overlap state of all segments
+  // if all segments overlapped, you win
+
 
 /* Application */
 
@@ -50,12 +60,19 @@ addListeners(shapes)
 addToStage(shapes)
 
 var grid = new Grid(10,200)
-stage.addChild(grid)
+var target = new Target(10,200)
 
-stage.update()
+stage.addChild(grid)
+stage.addChild(target)
+update()
 
 
 /* Helper Functions */
+
+function update() {
+  grid.bringToFront()
+  stage.update()
+}
 
 function addListeners(shapes) {
   for (shape of shapes) {
@@ -63,9 +80,9 @@ function addListeners(shapes) {
     // Shape becomes selected when mouse hovers over it
     shape.on("rollover", function(event) {
       selectedShape = this
-      stage.setChildIndex( this, stage.numChildren-1)
+      this.bringToFront()
       this.darken()
-      stage.update()
+      update()
     })
 
     // Shape becomes unselected when mouse moves off of it (except when dragging)
@@ -73,7 +90,7 @@ function addListeners(shapes) {
       if (!mouseDown) {
         selectedShape = false
         this.lighten()
-        stage.update()
+        update()
       }
     })
 
@@ -94,8 +111,18 @@ function addListeners(shapes) {
       if (!this.hitTest(pt.x, pt.y)) {
         selectedShape = false
         this.lighten()
-        stage.update()
       }
+
+      // TODO: add hitTest check with grid
+
+      pt = grid.globalToLocal(this.x, this.y)
+      snapPt = grid.snapTo(pt)
+      //console.log(`snap to ${grid.x + snapPt.x}, ${grid.y + snapPt.y}`)
+
+      this.x = grid.x + snapPt.x
+      this.y = grid.y + snapPt.y
+
+      update()
     })
 
     // Update shape coordinates while dragging
@@ -103,7 +130,7 @@ function addListeners(shapes) {
     shape.on("pressmove", function(event) {
       this.x = event.stageX + this.offset.x
 	    this.y = event.stageY + this.offset.y
-      stage.update()
+      update()
     })
 
   }
@@ -157,7 +184,7 @@ function rotate() {
       selectedShape.y -= pt.y
       break
   }
-  stage.update()
+  update()
 }
 
 function addHeading() {

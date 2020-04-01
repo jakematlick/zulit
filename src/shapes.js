@@ -47,6 +47,7 @@ class Shape extends createjs.Container {
   constructor(type, hue, x, y) {
     super()
 
+    //this.alpha = 0.75
     this.offset = {x: 0, y: 0}
     this.type = type
     this.color = `hsl(${hue},82%,71%)`
