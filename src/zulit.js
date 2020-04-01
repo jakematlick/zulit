@@ -7,27 +7,12 @@
 
 // how to track which segments a piece overlaps?
 
-// show game grid
+// make Shape subclass of container
+
 // snap to grid
 // disallow overlap
 // show target
 // detect target
-
-
-/* Constants */
-
-// Hues (0-360º)
-const blue   = 217
-const red    = 352
-const orange = 22
-const yellow = 52
-const green  = 112
-const cyan   = 172
-const violet = 262
-
-const segWidth = 16
-const segLength = 40
-
 
 /* Application */
 
@@ -63,6 +48,10 @@ var t2 = new Shape("t", violet, 5*segLength + 8.5*segWidth, segWidth + 2*segLeng
 var shapes = [z1,z2,u,l1,l2,i,t1,t2]
 addListeners(shapes)
 addToStage(shapes)
+
+var grid = new Grid(10,200)
+stage.addChild(grid)
+
 stage.update()
 
 
