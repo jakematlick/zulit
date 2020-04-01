@@ -1,8 +1,7 @@
 // add update ticker
-// drag from selected point, not center
 // make sure grid dots are on whole number coordinates
 // switch to modules + require
-
+// phone support
 
 /* Constants */
 
@@ -79,47 +78,3 @@ function addHeadingToPage() {
   var heading = document.getElementById('heading')
   heading.innerHTML = "Zulit"
 }
-
-
-
-
-
-
-// for (const seg of coords) {
-//   console.log(`start: ${seg.start.x}, ${seg.start.y}`)
-//   console.log(`end: ${seg.end.x}, ${seg.end.y}`)
-//   drawSegment(seg)
-// }
-
-// var rr = new createjs.Shape();
-// rr.name = "rnd_rect"
-// rr.graphics.beginFill(lightBlue)
-//            .drawRoundRect(0,0,100,15,7.5)
-// rr.x = 50
-// rr.y = 50
-
-// rr.on("mousedown", function(evt) {
-//   this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
-// });
-
-// rr.on("pressmove", function(evt) {
-//   this.x = evt.stageX + this.offset.x;
-// 	this.y = evt.stageY + this.offset.y;
-//   stage.update()
-// });
-
-// rr.on("mouseover", function(evt) {
-//   this.graphics.clear()
-//                 .beginFill(darkBlue)
-//                 .drawRoundRect(0,0,100,15,7.5)
-//   stage.update()
-// });
-
-// rr.on("mouseout", function(evt) {
-//   this.graphics.clear()
-//                .beginFill(lightBlue)
-//                .drawRoundRect(0,0,100,15,7.5)
-//   stage.update()
-// });
-
-// stage.addChild(rr);
