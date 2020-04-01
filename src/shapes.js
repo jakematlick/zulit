@@ -94,18 +94,56 @@ class Shape extends createjs.Container {
       this.addChild(line)
       this.strokes.push(stroke)
     }
+  }
 
-    this.darken = () => {
-      for (var stroke of this.strokes) {
-        stroke.style = this.selectedColor
-      }
+  darken() {
+    for (var stroke of this.strokes) {
+      stroke.style = this.selectedColor
     }
+  }
 
-    this.lighten = () => {
-      for (var stroke of this.strokes) {
-        stroke.style = this.color
-      }
+  lighten() {
+    for (var stroke of this.strokes) {
+      stroke.style = this.color
     }
+  }
 
+  // Rotate the selected shape
+  rotate(pt) {
+    
+    // Need to rotate the offset values as well
+    this.offset = {x: -this.offset.y, y: this.offset.x}
+
+    // Translate center of rotation to mouse point, rotate, then translate back
+    switch (this.rotation % 360) {
+      case 0:
+        this.x += pt.x
+        this.y += pt.y
+        this.rotation += 90
+        this.x += pt.y
+        this.y -= pt.x
+        break
+      case 90:
+        this.x -= pt.y
+        this.y += pt.x
+        this.rotation += 90
+        this.x += pt.x
+        this.y += pt.y
+        break
+      case 180:
+        this.x -= pt.x
+        this.y -= pt.y
+        this.rotation += 90
+        this.x -= pt.y
+        this.y += pt.x
+        break
+      case 270:
+        this.x += pt.y
+        this.y -= pt.x
+        this.rotation += 90
+        this.x -= pt.x
+        this.y -= pt.y
+        break
+    }
   }
 }

@@ -1,9 +1,9 @@
-// make sure grid dots are on whole number coordinates
 // switch to modules + require
 // phone support
 // snap to pixel mode?
 // Nicer typography
 // center grid
+// restore shape to initial position
 
 
 // make rotation a method of Shape
@@ -149,41 +149,9 @@ function rotate() {
 
   // Mouse point w/in shape
   var pt = selectedShape.globalToLocal(stage.mouseX, stage.mouseY)
-
-  // Need to rotate the offset values as well
-  selectedShape.offset = {x: -selectedShape.offset.y, y: selectedShape.offset.x}
-
-  // Translate center of rotation to mouse point, rotate, then translate back
-  switch (selectedShape.rotation % 360) {
-    case 0:
-      selectedShape.x += pt.x
-      selectedShape.y += pt.y
-      selectedShape.rotation += 90
-      selectedShape.x += pt.y
-      selectedShape.y -= pt.x
-      break
-    case 90:
-      selectedShape.x -= pt.y
-      selectedShape.y += pt.x
-      selectedShape.rotation += 90
-      selectedShape.x += pt.x
-      selectedShape.y += pt.y
-      break
-    case 180:
-      selectedShape.x -= pt.x
-      selectedShape.y -= pt.y
-      selectedShape.rotation += 90
-      selectedShape.x -= pt.y
-      selectedShape.y += pt.x
-      break
-    case 270:
-      selectedShape.x += pt.y
-      selectedShape.y -= pt.x
-      selectedShape.rotation += 90
-      selectedShape.x -= pt.x
-      selectedShape.y -= pt.y
-      break
-  }
+  
+  // Rotate shape
+  selectedShape.rotate(pt)
   update()
 }
 
