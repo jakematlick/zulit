@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 5000
+const PORT = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/src'))
 app.set('view engine', 'pug')
