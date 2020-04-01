@@ -1,0 +1,17 @@
+{
+  "name": "zulit",
+  "version": "0.0.0",
+  "description": "Zulit game by Mark Miller.",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "easeljs": "^1.0.2",
+    "express": "~4.16.1",
+    "pug": "2.0.0-beta11"
+  },
+  "author": "jake-matlick",
+  "engines": {
+    "node": "12.x"
+  }
+}
