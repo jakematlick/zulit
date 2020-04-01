@@ -42,19 +42,21 @@ const tCoords = [
   new Segment(new Point(1,0), new Point(1,1))
 ]
 
-class Shape {
+class Shape extends createjs.Container {
 
   constructor(type, hue, x, y) {
-    
+    super()
+
+    this.offset = {x: 0, y: 0}
     this.type = type
     this.color = `hsl(${hue},82%,71%)`
     this.selectedColor = `hsl(${hue},82%,55%)`
 
-    this.container = new createjs.Container()
-    this.container.strokes = []
-    this.container.x = x
-    this.container.y = y
-    this.container.name = this.type
+    //this.container = new createjs.Container()
+    this.strokes = []
+    this.x = x
+    this.y = y
+    this.name = this.type
 
     switch (type) {
       case "z":
@@ -88,18 +90,18 @@ class Shape {
                   .lineTo(endX, endY)
                   .endStroke()
 
-      this.container.addChild(line)
-      this.container.strokes.push(stroke)
+      this.addChild(line)
+      this.strokes.push(stroke)
     }
 
-    this.container.darken = () => {
-      for (var stroke of this.container.strokes) {
+    this.darken = () => {
+      for (var stroke of this.strokes) {
         stroke.style = this.selectedColor
       }
     }
 
-    this.container.lighten = () => {
-      for (var stroke of this.container.strokes) {
+    this.lighten = () => {
+      for (var stroke of this.strokes) {
         stroke.style = this.color
       }
     }

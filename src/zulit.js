@@ -61,7 +61,7 @@ function addListeners(shapes) {
   for (shape of shapes) {
     
     // Shape becomes selected when mouse hovers over it
-    shape.container.on("rollover", function(event) {
+    shape.on("rollover", function(event) {
       selectedShape = this
       stage.setChildIndex( this, stage.numChildren-1)
       this.darken()
@@ -69,7 +69,7 @@ function addListeners(shapes) {
     })
 
     // Shape becomes unselected when mouse moves off of it (except when dragging)
-    shape.container.on("rollout", function(event) {
+    shape.on("rollout", function(event) {
       if (!mouseDown) {
         selectedShape = false
         this.lighten()
@@ -80,14 +80,14 @@ function addListeners(shapes) {
     // When clicking on a shape, record the mouse offset within
     // the shape in order to drag from that point
     var mouseDown = false
-    shape.container.on("mousedown", function(event) {
+    shape.on("mousedown", function(event) {
       mouseDown = true
       this.offset = {x: this.x - event.stageX, y: this.y - event.stageY}
     })
 
     // When mouse goes up, check if we're still over the shape
     // and if not, unselect it.
-    shape.container.on("pressup", function(event) {
+    shape.on("pressup", function(event) {
       mouseDown = false
       
       var pt = this.globalToLocal(stage.mouseX, stage.mouseY)
@@ -100,7 +100,7 @@ function addListeners(shapes) {
 
     // Update shape coordinates while dragging
     // offset so that drag occurs from mouse point
-    shape.container.on("pressmove", function(event) {
+    shape.on("pressmove", function(event) {
       this.x = event.stageX + this.offset.x
 	    this.y = event.stageY + this.offset.y
       stage.update()
@@ -112,7 +112,7 @@ function addListeners(shapes) {
 // Add objects to the stage
 function addToStage(children) {
   for (child of children) {
-    stage.addChild(child.container)
+    stage.addChild(child)
   }
 }
 
