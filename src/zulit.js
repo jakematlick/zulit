@@ -1,20 +1,11 @@
-// switch to modules + require
 // phone support
-// snap to pixel mode?
-// Nicer typography
-// center grid
-// restore shape to initial position
 
+// move coords into Shape class as function of type
 
-// make rotation a method of Shape
-
-// how to track which segments a piece overlaps?
+// how to track which target segments a piece overlaps?
   // --> shape.type + shape.rotation + which dot snapped to
 
-// Update colors
-// hit test check before snapping to grid
-
-// disallow overlap
+// disallow overlap / crossing
   // --> what happens? revert to last position? (animate?)
 
 // detect target complete
@@ -24,20 +15,9 @@
   // if all segments overlapped, you win
 
 
-/* Application */
+/* Initialization */
 
 addHeading()
-
-// Keypress to rotate
-document.onkeypress = function (event) {
-  event = event || window.event
-  
-  switch (event.code) {
-    case "KeyR":
-      event.view.rotate()
-      break
-  }
-}
 
 var selectedShape = false
 var stage = new createjs.Stage("canvas-container")
@@ -46,24 +26,52 @@ if (segWidth % 2 == 1) {
 }
 stage.enableMouseOver(20)
 
-var z1 = new Shape("z", blue,     segWidth,                 segWidth)
-var z2 = new Shape("z", cyan,     segWidth,                 segWidth + 2*segLength)
-var u  = new Shape("u", red,    2*segLength + 2.5*segWidth, segWidth + 2*segLength)
-var l1 = new Shape("l", green,  3*segLength + 4*segWidth,   segWidth + segLength)
-var l2 = new Shape("l", green,  4*segLength + 5.5*segWidth, segWidth + segLength)
-var i  = new Shape("i", yellow, 5*segLength + 7*segWidth,   segWidth)
-var t1 = new Shape("t", violet, 5*segLength + 8.5*segWidth, segWidth)
-var t2 = new Shape("t", violet, 5*segLength + 8.5*segWidth, segWidth + 2*segLength)
 
-var shapes = [z1,z2,u,l1,l2,i,t1,t2]
-addListeners(shapes)
-addToStage(shapes)
+/* Key Presses */
 
-var grid = new Grid(10,200)
-var target = new Target(10,200)
+document.onkeypress = function (event) {
+  event = event || window.event
+  
+  switch (event.code) {
+    case "Space":
+      event.preventDefault()
+      event.view.rotate()
+      break
+    case "KeyR":
+      for (shape of pieces) {
+        shape.x = shape.initialX
+        shape.y = shape.initialY
+        shape.rotation = 0
+        update()
+      }
+      break
+  }
+}
+
+
+/* Application */
+
+var z1 = new Piece("z", pink,     segWidth,                 segLength - segWidth)
+var z2 = new Piece("z", purple,   segWidth,                 segWidth + 2*segLength)
+var u  = new Piece("u", red,    2*segLength + 2.5*segWidth, segWidth + 2*segLength)
+var l1 = new Piece("l", blue,   3*segLength + 4*segWidth,   segWidth + segLength)
+var l2 = new Piece("l", cyan,   4*segLength + 5.5*segWidth, segWidth + segLength)
+var i  = new Piece("i", green,  5*segLength + 7*segWidth,   segWidth)
+var t1 = new Piece("t", orange, 5*segLength + 8.5*segWidth, segLength - segWidth)
+var t2 = new Piece("t", yellow, 5*segLength + 8.5*segWidth, segWidth + 2*segLength)
+var pieces = [z1,z2,u,l1,l2,i,t1,t2]
+
+addListeners(pieces)
+addToStage(pieces)
+
+var grid = new Grid(0,215)
+var target = new Target(0,215)
 
 stage.addChild(grid)
 stage.addChild(target)
+
+grid.center()
+target.center()
 update()
 
 
@@ -99,6 +107,8 @@ function addListeners(shapes) {
     var mouseDown = false
     shape.on("mousedown", function(event) {
       mouseDown = true
+      this.lastX = this.x
+      this.lastY = this.y
       this.offset = {x: this.x - event.stageX, y: this.y - event.stageY}
     })
 
@@ -113,11 +123,8 @@ function addListeners(shapes) {
         this.lighten()
       }
 
-      // TODO: add hitTest check with grid
-
       pt = grid.globalToLocal(this.x, this.y)
       snapPt = grid.snapTo(pt)
-      //console.log(`snap to ${grid.x + snapPt.x}, ${grid.y + snapPt.y}`)
 
       this.x = grid.x + snapPt.x
       this.y = grid.y + snapPt.y
@@ -160,5 +167,9 @@ function addHeading() {
   heading.innerHTML = "Zulit"
 
   var subheading = document.getElementById('subheading')
-  subheading.innerHTML = "Drag the pieces to cover the target shape below.<br/>Press 'R' to rotate the selected piece."
+  subheading.innerHTML = `
+  Drag the pieces to cover the target shape below<br/>
+  Press 'Space' to rotate the selected piece<br/>
+  Press 'R' to reset the pieces
+  `
 }

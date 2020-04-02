@@ -14,6 +14,18 @@ const col4 = [true, true, false]
 const col5 = [true, true, false]
 const cols = [col0, col1, col2, col3, col4, col5]
 
+class Dot extends createjs.Shape {
+
+  constructor(x, y, radius) {
+    super()
+    this.graphics.beginFill("silver").drawCircle(0,0,radius)
+    this.x = x
+    this.y = y
+    this.setBounds(-radius,-radius,2*radius,2*radius)
+  }
+
+}
+
 class Grid extends createjs.Container {
 
   constructor(x,y) {
@@ -22,10 +34,9 @@ class Grid extends createjs.Container {
     // Grid dots
     for (var i = 0; i < numCols; i++) {
       for (var j = 0; j < numRows; j++) {
-        var dot = new createjs.Shape()
-        dot.graphics.beginFill("silver").drawCircle(0,0,dotSize)
-        dot.x = gridMarginX + i*segLength
-        dot.y = gridMarginY + j*segLength
+        const x = gridMarginX + i*segLength
+        const y = gridMarginY + j*segLength
+        var dot = new Dot(x, y, dotSize)
         this.addChild(dot)
       }
     }
@@ -35,12 +46,42 @@ class Grid extends createjs.Container {
 
   }
 
+  center() {
+    if (!this.parent) { return }
+    this.x = (this.parent.canvas.width - this.getBounds().width)/2
+    this.parent.update()
+  }
+
   snapTo(pt) {
     const nx = Math.round( (pt.x - gridMarginX)/segLength )
     const ny = Math.round( (pt.y - gridMarginY)/segLength )
     return {x: gridMarginX + nx*segLength, y: gridMarginY + ny*segLength}
   }
 
+}
+
+class HorizontalSegment extends createjs.Shape {
+  constructor(x,y,len) {
+    super()
+    this.graphics.beginStroke("lightgray")
+                  .setStrokeStyle(segWidth, "round", "round")
+                  .moveTo(x, y)
+                  .lineTo(x + len, y)
+                  .endStroke()
+    this.setBounds(x,y,len+segWidth,segWidth)
+  }
+}
+
+class VerticalSegment extends createjs.Shape {
+  constructor(x,y,len) {
+    super()
+    this.graphics.beginStroke("lightgray")
+                  .setStrokeStyle(segWidth, "round", "round")
+                  .moveTo(x, y)
+                  .lineTo(x, y + len)
+                  .endStroke()
+    this.setBounds(x,y,segWidth,len+segWidth)
+  }
 }
 
 class Target extends createjs.Container {
@@ -57,15 +98,8 @@ class Target extends createjs.Container {
 
         var startX = gridMarginX + seg * segLength
         var startY = gridMarginY + r * segLength
-
-        var line = new createjs.Shape()
-        line.graphics.beginStroke("lightgray")
-                     .setStrokeStyle(segWidth, "round", "round")
-                     .moveTo(startX, startY)
-                     .lineTo(startX + segLength, startY)
-                     .endStroke()
-
-        this.addChild(line)        
+        var line = new HorizontalSegment(startX, startY, segLength)
+        this.addChild(line)
       }
     }
 
@@ -78,20 +112,19 @@ class Target extends createjs.Container {
 
         var startX = gridMarginX + c * segLength
         var startY = gridMarginY + seg * segLength
-
-        var line = new createjs.Shape()
-        line.graphics.beginStroke("lightgray")
-                     .setStrokeStyle(segWidth, "round", "round")
-                     .moveTo(startX, startY)
-                     .lineTo(startX, startY + segLength)
-                     .endStroke()
-
-        this.addChild(line)        
+        var line = new VerticalSegment(startX,startY,segLength)
+        this.addChild(line)
       }
     }
 
     this.x = x
     this.y = y
+  }
+
+  center() {
+    if (!this.parent) { return }
+    this.x = (this.parent.canvas.width - this.getBounds().width)/2 + 5 // why +5?
+    this.parent.update()
   }
 
 }

@@ -42,7 +42,7 @@ const tCoords = [
   new Segment(new Point(1,0), new Point(1,1))
 ]
 
-class Shape extends createjs.Container {
+class Piece extends createjs.Container {
 
   constructor(type, hue, x, y) {
     super()
@@ -55,9 +55,14 @@ class Shape extends createjs.Container {
 
     //this.container = new createjs.Container()
     this.strokes = []
+    this.name = this.type
+
     this.x = x
     this.y = y
-    this.name = this.type
+    this.initialX = x
+    this.initialY = y
+    this.lastX = x
+    this.lastY = y
 
     switch (type) {
       case "z":
@@ -110,7 +115,7 @@ class Shape extends createjs.Container {
 
   // Rotate the selected shape
   rotate(pt) {
-    
+
     // Need to rotate the offset values as well
     this.offset = {x: -this.offset.y, y: this.offset.x}
 
