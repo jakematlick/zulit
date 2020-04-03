@@ -1,18 +1,132 @@
-// Horizontal segments
-const row0 = [false, true, true, true, true]
-const row1 = [true, true, true, true, false]
-const row2 = [true, false, true, true, true]
-const row3 = [false, true, true, false, false]
-const rows = [row0, row1, row2, row3]
+class GameBoard {
 
-// Vertical segments
-const col0 = [false, true, false]
-const col1 = [false, false, true]
-const col2 = [true, false, true]
-const col3 = [false, true, true]
-const col4 = [true, true, false]
-const col5 = [true, true, false]
-const cols = [col0, col1, col2, col3, col4, col5]
+  constructor(nRows, nCols) {
+
+    this.numRows = nRows
+    this.numCols = nCols
+
+    // horizontal segments
+    this.horizontal = []
+    for (var r = 0; r < this.numRows; r++) {
+      var row = []
+      for (var c = 0; c < this.numCols-1; c++) {
+        row.push(false)
+      }
+      this.horizontal.push(row)
+    }
+
+    // vertical segments
+    this.vertical = []
+    for (var r = 0; r < this.numRows-1; r++) {
+      var row = []
+      for (var c = 0; c < this.numCols; c++) {
+        row.push(false)
+      }
+      this.vertical.push(row)
+    }
+  }
+
+  reset() {
+    for (var r = 0; r < this.horizontal.length; r++) {
+      var row = this.horizontal[r]
+      for (var c = 0; c < row.length; c++) {
+        this.horizontal[r][c] = false
+      }
+    }
+    for (var r = 0; r < this.vertical.length; r++) {
+      var row = this.vertical[r]
+      for (var c = 0; c < row.length; c++) {
+        this.vertical[r][c] = false
+      }
+    }
+  }
+
+  update(piece, pt, value) {
+
+    for (const coord of piece.coords) {
+
+      if (coord.x == 1) {
+        if (pt.y < numRows && pt.x < numCols-1 && pt.y >= 0 && pt.x >= 0) {
+          this.horizontal[pt.y][pt.x] = value
+        }
+        pt.x++
+      }
+      else if (coord.y == 1) {
+        if (pt.y < numRows-1 && pt.x < numCols && pt.y >= 0 && pt.x >= 0) {
+          this.vertical[pt.y][pt.x] = value
+        }
+        pt.y++
+      }
+      else if (coord.x == -1) {
+        pt.x--
+        if (pt.y < numRows && pt.x < numCols-1 && pt.y >= 0 && pt.x >= 0) {
+          this.horizontal[pt.y][pt.x] = value
+        }
+      }
+      else if (coord.y == -1) {
+        pt.y--
+        if (pt.y < numRows-1 && pt.x < numCols && pt.y >= 0 && pt.x >= 0) {
+          this.vertical[pt.y][pt.x] = value
+        }
+      }
+
+    }
+  }
+
+  isSolvedHorizontal(target) {
+    for (var r = 0; r < this.numRows; r++) {
+      for (var c = 0; c < this.numCols-1; c++) {
+        if (target.horizontal[r][c] && !this.horizontal[r][c]) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  isSolvedVertical(target) {
+    for (var r = 0; r < this.numRows-1; r++) {
+      for (var c = 0; c < this.numCols; c++) {
+        if (target.vertical[r][c] && !this.vertical[r][c]) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  isSolved(target) {
+    return this.isSolvedHorizontal(target) && this.isSolvedVertical(target)
+  }
+
+}
+
+const targetBoard = new GameBoard(numRows, numCols)
+// targetBoard.horizontal = [
+//   [false, true,  true, true,  true],
+//   [true,  true,  true, true,  false],
+//   [true,  false, true, true,  true],
+//   [false, true,  true, false, false]
+// ]
+// targetBoard.vertical = [
+//   [false, true,  false],
+//   [false, false, true],
+//   [true,  false, true],
+//   [false, true,  true],
+//   [true,  true,  false],
+//   [true,  true,  false]
+// ]
+targetBoard.horizontal = [
+  [false, true,  true, true,  true],
+  [true,  false,  true, true,  false],
+  [true,  true, true, true,  true],
+  [false, true,  true, false, false]
+]
+targetBoard.vertical = [
+  [false, false,  false, false,  true,  true],
+  [true,  true,   false, true,   true,  true],
+  [false, true,   true,  true,   false, false]
+]
 
 class Dot extends createjs.Shape {
 
@@ -34,8 +148,8 @@ class Grid extends createjs.Container {
     // Grid dots
     for (var i = 0; i < numCols; i++) {
       for (var j = 0; j < numRows; j++) {
-        const x = gridMarginX + i*segLength
-        const y = gridMarginY + j*segLength
+        const x = i*segLength
+        const y = j*segLength
         var dot = new Dot(x, y, dotSize)
         this.addChild(dot)
       }
@@ -52,10 +166,10 @@ class Grid extends createjs.Container {
     this.parent.update()
   }
 
+  // Return node index to snap to
   snapTo(pt) {
-    const nx = Math.round( (pt.x - gridMarginX)/segLength )
-    const ny = Math.round( (pt.y - gridMarginY)/segLength )
-    return {x: gridMarginX + nx*segLength, y: gridMarginY + ny*segLength}
+    return {x: Math.round( pt.x / segLength ),
+            y: Math.round( pt.y / segLength )}
   }
 
 }
@@ -90,28 +204,28 @@ class Target extends createjs.Container {
     super()
 
     // Horizontal segments
-    for (var r = 0; r < rows.length; r++) {
-      const row = rows[r]
+    for (var r = 0; r < numRows; r++) {
+      const row = targetBoard.horizontal[r]
 
       for (var seg = 0; seg < row.length; seg++) {
         if (!row[seg]) { continue }
 
-        var startX = gridMarginX + seg * segLength
-        var startY = gridMarginY + r * segLength
+        var startX = seg * segLength
+        var startY =   r * segLength
         var line = new HorizontalSegment(startX, startY, segLength)
         this.addChild(line)
       }
     }
 
     // Vertical segments
-    for (var c = 0; c < cols.length; c++) {
-      const col = cols[c]
+    for (var r = 0; r < numRows-1; r++) {
+      const row = targetBoard.vertical[r]
 
-      for (var seg = 0; seg < col.length; seg++) {
-        if (!col[seg]) { continue }
+      for (var seg = 0; seg < row.length; seg++) {
+        if (!row[seg]) { continue }
 
-        var startX = gridMarginX + c * segLength
-        var startY = gridMarginY + seg * segLength
+        var startX = seg * segLength
+        var startY =   r * segLength
         var line = new VerticalSegment(startX,startY,segLength)
         this.addChild(line)
       }

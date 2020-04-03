@@ -1,25 +1,26 @@
 // phone support
 
-// move coords into Shape class as function of type
+// Add way to define multiple target shapes
 
-// how to track which target segments a piece overlaps?
-  // --> shape.type + shape.rotation + which dot snapped to
+// Add drawDots() static function to GameBoard
+// Add drawBoard() function to GameBoard
+// Get rid of Target and Grid classes
+// Rename grid.js to gameboard.js
+
+
+// Piece subclasses?
+  // Piece has coords = [] and subclasses override that
+
 
 // disallow overlap / crossing
   // --> what happens? revert to last position? (animate?)
-
-// detect target complete
-  // detect segment overlap when snapping piece
-    // --> shape.type + shape.rotation + which dot snapped to
-  // store overlap state of all segments
-  // if all segments overlapped, you win
 
 
 /* Initialization */
 
 addHeading()
 
-var selectedShape = false
+var selectedPiece = false
 var stage = new createjs.Stage("canvas-container")
 if (segWidth % 2 == 1) {
   stage.regX = stage.regY = 0.5
@@ -28,7 +29,7 @@ stage.enableMouseOver(20)
 
 
 /* Key Presses */
-
+document.body.focus()
 document.onkeypress = function (event) {
   event = event || window.event
   
@@ -42,6 +43,8 @@ document.onkeypress = function (event) {
         shape.x = shape.initialX
         shape.y = shape.initialY
         shape.rotation = 0
+        board.reset()
+        board.update()
         update()
       }
       break
@@ -49,7 +52,7 @@ document.onkeypress = function (event) {
 }
 
 
-/* Application */
+/* Game Pieces */
 
 var z1 = new Piece("z", pink,     segWidth,                 segLength - segWidth)
 var z2 = new Piece("z", purple,   segWidth,                 segWidth + 2*segLength)
@@ -63,6 +66,10 @@ var pieces = [z1,z2,u,l1,l2,i,t1,t2]
 
 addListeners(pieces)
 addToStage(pieces)
+
+/* Game Board */
+
+var board = new GameBoard(numRows, numCols)
 
 var grid = new Grid(0,215)
 var target = new Target(0,215)
@@ -87,7 +94,7 @@ function addListeners(shapes) {
     
     // Shape becomes selected when mouse hovers over it
     shape.on("rollover", function(event) {
-      selectedShape = this
+      selectedPiece = this
       this.bringToFront()
       this.darken()
       update()
@@ -96,7 +103,7 @@ function addListeners(shapes) {
     // Shape becomes unselected when mouse moves off of it (except when dragging)
     shape.on("rollout", function(event) {
       if (!mouseDown) {
-        selectedShape = false
+        selectedPiece = false
         this.lighten()
         update()
       }
@@ -107,6 +114,10 @@ function addListeners(shapes) {
     var mouseDown = false
     shape.on("mousedown", function(event) {
       mouseDown = true
+      pt = grid.globalToLocal(this.x, this.y)
+      snapPt = {x: Math.round( pt.x / segLength ),
+                y: Math.round( pt.y / segLength )}
+      board.update(this, snapPt, false)
       this.lastX = this.x
       this.lastY = this.y
       this.offset = {x: this.x - event.stageX, y: this.y - event.stageY}
@@ -119,24 +130,32 @@ function addListeners(shapes) {
       
       var pt = this.globalToLocal(stage.mouseX, stage.mouseY)
       if (!this.hitTest(pt.x, pt.y)) {
-        selectedShape = false
+        selectedPiece = false
         this.lighten()
       }
 
       pt = grid.globalToLocal(this.x, this.y)
-      snapPt = grid.snapTo(pt)
+      snapPt = {x: Math.round( pt.x / segLength ),
+                y: Math.round( pt.y / segLength )}
 
-      this.x = grid.x + snapPt.x
-      this.y = grid.y + snapPt.y
+      this.x = grid.x + snapPt.x * segLength
+      this.y = grid.y + snapPt.y * segLength
+
+      // Todo: Need to gate this on whether or not the piece was able to snap
+      board.update(selectedPiece, snapPt, true)
 
       update()
+
+      if (board.isSolved(targetBoard)) {
+        alert("You win")
+      }
     })
 
     // Update shape coordinates while dragging
     // offset so that drag occurs from mouse point
     shape.on("pressmove", function(event) {
       this.x = event.stageX + this.offset.x
-	    this.y = event.stageY + this.offset.y
+      this.y = event.stageY + this.offset.y
       update()
     })
 
@@ -152,13 +171,13 @@ function addToStage(children) {
 
 // Rotate the selected shape
 function rotate() {
-  if (!selectedShape) { return }
+  if (!selectedPiece) { return }
 
   // Mouse point w/in shape
-  var pt = selectedShape.globalToLocal(stage.mouseX, stage.mouseY)
+  var pt = selectedPiece.globalToLocal(stage.mouseX, stage.mouseY)
   
   // Rotate shape
-  selectedShape.rotate(pt)
+  selectedPiece.rotate(pt)
   update()
 }
 

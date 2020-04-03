@@ -17,9 +17,6 @@ const numCols = 6
 
 const dotSize = 3
 
-const gridMarginX = 0
-const gridMarginY = 0
-
 
 // Functions
 
