@@ -1,13 +1,12 @@
+// BUG: rotate after flipping doesn't work
+//    --> need to incorporate scaleX/Y into calculation?
+
 // phone support
-// Add way to define multiple target shapes
+// Add way to select from multiple target game boards
 
-// Add drawDots() static function to GameBoard
-// Add drawBoard() function to GameBoard
-// Get rid of Target and Grid classes
-// Rename grid.js to gameboard.js
-
-// Piece subclasses?
-  // Piece has coords = [] and subclasses override that
+//  move functionality into GameBoard class
+  // drawDots() static function
+  // drawBoard() function
 
 // disallow overlap / crossing
   // --> what happens? revert to last position? (animate?)
@@ -142,13 +141,12 @@ function addListeners(shapes) {
       this.x = grid.x + snapPt.x * segLength
       this.y = grid.y + snapPt.y * segLength
 
-      // Todo: Need to gate this on whether or not the piece was able to snap
       board.update(selectedPiece, snapPt, true)
 
       update()
 
       if (board.isSolved(targetBoard)) {
-        alert("You win")
+        setTimeout(win, 500)
       }
     })
 
@@ -205,4 +203,8 @@ function addHeading() {
   Press 'X' to flip the selected piece<br/>
   Press 'R' to reset the pieces
   `
+}
+
+function win() {
+  alert("You win")
 }

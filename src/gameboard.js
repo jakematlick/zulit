@@ -43,6 +43,14 @@ class GameBoard {
 
   update(piece, pt, value) {
 
+    if (!piece.coords) {
+      console.log("bad piece in board.update?")
+      console.log(piece)
+      console.log(pt)
+      console.log(value)
+      return
+    }
+
     for (const coord of piece.coords) {
 
       if (coord.x == 1) {

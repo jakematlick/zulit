@@ -88,41 +88,38 @@ class Piece extends createjs.Container {
     // Translate center of rotation to mouse point, rotate, then translate back
     switch (this.rotation % 360) {
       case 0:
-        this.x += p.x
-        this.y += p.y
+        this.x += p.x * this.scaleX
+        this.y += p.y * this.scaleY
         this.rotation += 90
-        this.x += p.y
-        this.y -= p.x
+        this.x += p.y * this.scaleY
+        this.y -= p.x * this.scaleX
         break
       case 90:
-        this.x -= p.y
-        this.y += p.x
+        this.x -= p.y * this.scaleY
+        this.y += p.x * this.scaleX
         this.rotation += 90
-        this.x += p.x
-        this.y += p.y
+        this.x += p.x * this.scaleX
+        this.y += p.y * this.scaleY
         break
       case 180:
-        this.x -= p.x
-        this.y -= p.y
+        this.x -= p.x * this.scaleX
+        this.y -= p.y * this.scaleY
         this.rotation += 90
-        this.x -= p.y
-        this.y += p.x
+        this.x -= p.y * this.scaleY
+        this.y += p.x * this.scaleX
         break
       case 270:
-        this.x += p.y
-        this.y -= p.x
+        this.x += p.y * this.scaleY
+        this.y -= p.x * this.scaleX
         this.rotation += 90
-        this.x -= p.x
-        this.y -= p.y
+        this.x -= p.x * this.scaleX
+        this.y -= p.y * this.scaleY
         break
     }
   }
 
   // Flip the piece horizonally
   flip(p) {
-
-    console.log(`x,y = ${this.x}, ${this.y}`)
-    console.log(`p = ${p.x}, ${p.y}`)
 
     // Flip the offset value
     this.offset.x *= -1
@@ -148,7 +145,6 @@ class Piece extends createjs.Container {
       this.x += 2 * this.scaleY * p.y
       this.scaleY *= -1
     }
-    console.log(`x,y = ${this.x}, ${this.y}`)
     
   }
 
