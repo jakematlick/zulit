@@ -72,7 +72,7 @@ class Piece extends createjs.Container {
     }
   }
 
-  // Rotate the selected shape
+  // Rotate the piece
   rotate(p) {
 
     // Need to rotate the offset values as well
@@ -117,4 +117,39 @@ class Piece extends createjs.Container {
         break
     }
   }
+
+  // Flip the piece horizonally
+  flip(p) {
+
+    console.log(`x,y = ${this.x}, ${this.y}`)
+    console.log(`p = ${p.x}, ${p.y}`)
+
+    // Flip the offset value
+    this.offset.x *= -1
+
+    // Flip the coords
+    for (var i=0; i<this.coords.length; i++) {
+      this.coords[i].x *= -1
+    }
+
+    if (this.rotation % 360 == 0) {
+      this.x += 2 * this.scaleX * p.x
+      this.scaleX *= -1
+    }
+    else if (this.rotation % 360 == 90) {
+      this.x -= 2 * this.scaleY * p.y
+      this.scaleY *= -1
+    }
+    else if (this.rotation % 360 == 180) {
+      this.x -= 2 * this.scaleX * p.x
+      this.scaleX *= -1
+    }
+    else if (this.rotation % 360 == 270) {
+      this.x += 2 * this.scaleY * p.y
+      this.scaleY *= -1
+    }
+    console.log(`x,y = ${this.x}, ${this.y}`)
+    
+  }
+
 }

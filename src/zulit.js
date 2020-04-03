@@ -1,5 +1,4 @@
 // phone support
-
 // Add way to define multiple target shapes
 
 // Add drawDots() static function to GameBoard
@@ -7,10 +6,8 @@
 // Get rid of Target and Grid classes
 // Rename grid.js to gameboard.js
 
-
 // Piece subclasses?
   // Piece has coords = [] and subclasses override that
-
 
 // disallow overlap / crossing
   // --> what happens? revert to last position? (animate?)
@@ -39,15 +36,19 @@ document.onkeypress = function (event) {
       event.view.rotate()
       break
     case "KeyR":
-      for (shape of pieces) {
-        shape.x = shape.initialX
-        shape.y = shape.initialY
-        shape.rotation = 0
+      for (piece of pieces) {
+        piece.x = piece.initialX
+        piece.y = piece.initialY
+        piece.rotation = 0
+        piece.scaleX = piece.scaleY = 1
         board.reset()
-        board.update()
         update()
       }
       break
+    case "KeyX":
+      event.view.flip()
+      break
+
   }
 }
 
@@ -181,6 +182,18 @@ function rotate() {
   update()
 }
 
+// Flip the selected shape horizontally
+function flip() {
+  if (!selectedPiece) { return }
+
+  // Mouse point w/in shape
+  var pt = selectedPiece.globalToLocal(stage.mouseX, stage.mouseY)
+  
+  // Rotate shape
+  selectedPiece.flip(pt)
+  update()
+}
+
 function addHeading() {
   var heading = document.getElementById('heading')
   heading.innerHTML = "Zulit"
@@ -189,6 +202,7 @@ function addHeading() {
   subheading.innerHTML = `
   Drag the pieces to cover the target shape below<br/>
   Press 'Space' to rotate the selected piece<br/>
+  Press 'X' to flip the selected piece<br/>
   Press 'R' to reset the pieces
   `
 }

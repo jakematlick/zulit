@@ -118,14 +118,14 @@ const targetBoard = new GameBoard(numRows, numCols)
 // ]
 targetBoard.horizontal = [
   [false, true,  true, true,  true],
-  [true,  false,  true, true,  false],
-  [true,  true, true, true,  true],
+  [true,  true,  true, true,  false],
+  [true,  false, true, true,  true],
   [false, true,  true, false, false]
 ]
 targetBoard.vertical = [
-  [false, false,  false, false,  true,  true],
-  [true,  true,   false, true,   true,  true],
-  [false, true,   true,  true,   false, false]
+  [false, false, true,  false,  true,  true],
+  [true,  false, false, true,   true,  true],
+  [false, true,  true,  true,   false, false]
 ]
 
 class Dot extends createjs.Shape {
