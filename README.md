@@ -1,7 +1,7 @@
 # Zulit
 Zulit is a puzzle game. Drag the pieces to cover the target shape.
 
-![zulit screenshot](https://raw.githubusercontent.com/jakematlick/zulit/master/zulit.png)
+![zulit screenshot](https://raw.githubusercontent.com/jakematlick/zulit/master/zulit.png | width=600)
 
 ### Set up
 
