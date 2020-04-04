@@ -1,15 +1,12 @@
-// BUG: rotate after flipping doesn't work
-//    --> need to incorporate scaleX/Y into calculation?
-
-// phone support
-// Add way to select from multiple target game boards
-
-//  move functionality into GameBoard class
+// TODO
+// Add phone support
+// Add way to define and select other target game boards
+// Refactor to move functionality into GameBoard class
   // drawDots() static function
   // drawBoard() function
-
-// disallow overlap / crossing
+// Disallow overlapping or crossing pieces?
   // --> what happens? revert to last position? (animate?)
+// BUG: detecting win condition doesn't always work
 
 
 /* Initialization */
@@ -66,6 +63,7 @@ var pieces = [z1,z2,u,l1,l2,i,t1,t2]
 
 addListeners(pieces)
 addToStage(pieces)
+
 
 /* Game Board */
 
