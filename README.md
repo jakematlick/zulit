@@ -1,6 +1,8 @@
 # Zulit
 Zulit is a puzzle game. Drag the pieces to cover the target shape.
 
+![zulit screenshot](https://raw.githubusercontent.com/jakematlick/zulit/master/zulit.png)
+
 ### Set up
 
 1\. [Install node and npm](https://nodejs.org/en.)  
