@@ -9,7 +9,7 @@ Zulit is a puzzle game. Drag the pieces to cover the target shape.
 2\. Run `npm install` in the project directory to install dependencies
 
 ### Running the app locally
-1\. Run `npm start` to run a local server  
+1\. Run `npm start` in the project directory to run a local server  
 2\. Open `localhost:3000` in your web browser to run the game
 
 ### Dependencies
