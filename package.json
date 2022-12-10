@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "easeljs": "^1.0.2",
-    "express": "~4.16.1",
+    "express": "~4.17.3",
     "pug": "2.0.0-beta11"
   },
   "author": "jake-matlick",
